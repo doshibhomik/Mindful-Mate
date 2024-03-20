@@ -101,3 +101,51 @@ with response_container:
             message(st.session_state["generated"][i], key=str(i))
             
                 
+
+# Function to fetch nearby mental health clinics
+
+# Replace 'YOUR_API_KEY' with your actual Google Maps API key
+gmaps = googlemaps.Client(key='AIzaSyAj3Bdt1SvD-6kM6vrN6F7p_GDaeXOH8OQ')
+
+def find_mental_health_facilities(postal_code, radius=10000):
+    # Geocode the postal code to get its latitude and longitude
+    geocode_result = gmaps.geocode(postal_code)
+    if not geocode_result:
+        print(f"Postal code {postal_code} not found.")
+        return
+
+    location = geocode_result[0]['geometry']['location']
+    lat, lng = location['lat'], location['lng']
+
+    # Search for mental health clinics and hospitals nearby
+    places_result = gmaps.places_nearby(
+        location=(lat, lng),
+        radius=radius,
+        type='hospital',
+        keyword='mental health clinic'
+    )
+
+    return places_result['results'] if 'results' in places_result else None
+
+        #print("No mental health clinics or hospitals found nearby.")
+        
+# Streamlit UI
+def main():
+    st.title("Find Nearest Mental Health Clinic and Hospital")
+    postal_code = st.text_input("Enter your postal code:")
+    if st.button("Search"):
+        if postal_code:
+            facilities = find_mental_health_facilities(postal_code)
+            if facilities:
+                st.header('Results:')
+                for place in facilities:
+                    name = place['name']
+                    address = place['vicinity']
+                    st.write(f"- {name}: {address}")
+            else:
+                st.error("No mental health clinics or hospitals found nearby.")
+        else:
+            st.warning("Please enter a valid postal code.")
+
+if __name__ == "__main__":
+    main()
