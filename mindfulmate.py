@@ -4,8 +4,8 @@ import googlemaps
 from PIL import Image
 import os
 from streamlit_chat import message
-import googlemaps
 import random
+from streamlit_extras.colored_header import colored_header
 
 # Set Streamlit page configuration
 st.set_page_config(page_title="Mindful Mate", page_icon=":robot:")
