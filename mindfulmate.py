@@ -5,6 +5,7 @@ from PIL import Image
 import os
 from streamlit_chat import message
 from streamlit_extras.colored_header import colored_header
+import googlemaps
 
 st.set_page_config(page_title="Mindful Mate", page_icon=":robot:")
 
