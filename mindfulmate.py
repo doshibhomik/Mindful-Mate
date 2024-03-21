@@ -2,9 +2,12 @@ import openai
 import streamlit as st
 from PIL import Image
 import os
+import streamlit as st
+import requests
 from streamlit_chat import message
 from streamlit_extras.colored_header import colored_header
 import googlemaps
+
 
 st.set_page_config(page_title="Mindful Mate", page_icon=":robot:")
 
@@ -15,7 +18,7 @@ openai.api_key = "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"
 page_bg = f"""
 <style>
 [data-testid="stSidebar"] {{
-background-color:#1F423F;
+background-color:#1F423Fclear;
 
 }}
 
@@ -102,6 +105,7 @@ with response_container:
             message(st.session_state["generated"][i], key=str(i))
             
                 
+
 
 # Function to fetch nearby mental health clinics
 
