@@ -173,3 +173,5 @@ elif page_selection == 'Nearby Hospital':
     nearby_hospital()
 elif page_selection == 'Game':
     game()
+ 
+                
