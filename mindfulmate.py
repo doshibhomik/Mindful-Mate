@@ -7,13 +7,17 @@ import googlemaps
 import random
 import numpy as np
 from streamlit_option_menu import option_menu
+from streamlit_lottie import st_lottie
+import requests
 
 # Set Streamlit page configuration
 st.set_page_config(
     page_title="Mindful Mate",
-    page_icon=":robot:",
+    page_icon="robot.png",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="auto",
+    menu_items={
+        'About': "Made with 💚 by *Capstone Project*"}
 )
 
 # Set OpenAI API key
@@ -205,29 +209,44 @@ with st.sidebar:
 
 # Page 1: Homepage
 def homepage():
-    st.title("Mindful Mate")
-    st.image("Mindful Mate.jpg", width=300, use_column_width=False)
-    st.write("""
-        Welcome to Mindful Mate, your AI companion for emotional wellbeing.
+    # Centered title
+    st.markdown("<h1 style='text-align: center;'>Mindful Mate</h1>", unsafe_allow_html=True)
+    
+    # Display Lottie animation and title side by side
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        # Display Lottie animation
+        lottie_url = "https://lottie.host/c448c5c1-810b-446c-909a-b507edba534d/Qs7RrD2FXj.json"  # Example URL
+        response = requests.get(lottie_url)
+        if response.status_code == 200:
+            lottie_json = response.json()
+            st_lottie(lottie_json, speed=1, width=300, height=300)  # Adjust width and height as needed
+    
+    with col2:
+        # Display title and description  
+        st.write("""
+            Welcome to Mindful Mate, your AI companion for emotional wellbeing.
 
-Feeling stressed, anxious, or just need someone to talk to? Mindful Mate is here to lend a caring ear and provide tools to help you navigate life's challenges with greater ease.
+            Feeling stressed, anxious, or just need someone to talk to? Mindful Mate is here to lend a caring ear and provide tools to help you navigate life's challenges with greater ease.
 
-As your empathetic AI friend, I'm available 24/7 to listen without judgment, offer encouragement, and guide you through simple mindfulness practices. Whether you need a check-in, want to talk through worries, or could use help unwinding, I'm here to support your mental health journey.
+            As your empathetic AI friend, I'm available 24/7 to listen without judgment, offer encouragement, and guide you through simple mindfulness practices. Whether you need a check-in, want to talk through worries, or could use help unwinding, I'm here to support your mental health journey.
 
-In addition to being your supportive companion, I can also:
+            In addition to being your supportive companion, I can also:
 
-🏥 Locate nearby hospitals and mental health resources with our easy locator tool.
+            🏥 Locate nearby hospitals and mental health resources with our easy locator tool.
 
-✂️ Take a break and have some fun with a quick game of rock, paper, scissors.
+            ✂️ Take a break and have some fun with a quick game of rock, paper, scissors.
 
-My role is to be your ally, not to replace professional care. However, I'm always a message away when you need a friendly voice or extra support between appointments.
+            My role is to be your ally, not to replace professional care. However, I'm always a message away when you need a friendly voice or extra support between appointments.
 
-Let's walk the path of wellbeing together. I'm here to listen, anytime
-    """)
+            Let's walk the path of wellbeing together. I'm here to listen, anytime
+        """)
 
 # Page 2: Chatbot
 def chatbot():
-    st.title("Mental Health Chatbot")
+    # Centered title
+    st.markdown("<h1 style='text-align: center;'>Mindful Mate Chatbot</h1>", unsafe_allow_html=True)   
 
     # Generate empty lists for generated and past.
     ## generated stores AI generated responses
@@ -288,59 +307,85 @@ def chatbot():
 
 # Page 3: Nearby Hospital
 def nearby_hospital():
-    st.title("Find Nearby Hospital if you're feeling low")
-    postal_code = st.text_input("Enter your postal code:", key="postal code hospital")
-    if st.button("Search"):
-        if postal_code:
-            # Function to find 5 highest-rated hospitals based on postal code
-            def find_top_hospitals(postal_code):
+    # Centered title
+    st.markdown("<h1 style='text-align: center;'>Find Nearby Hospital if you're feeling low</h1>", unsafe_allow_html=True)
+    
+    # Display Lottie animation and title side by side
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        # Display Lottie animation
+        lottie_url = "https://lottie.host/a94a888b-7508-469b-9343-cbcd34d7069b/Z6guWdHJY4.json"  # Add URL to your Lottie animation
+        response = requests.get(lottie_url)
+        if response.status_code == 200:
+            lottie_json = response.json()
+            st_lottie(lottie_json, speed=1, width=300, height=300)
+    
+    with col2:
+        postal_code = st.text_input("Enter your postal code:", key="postal code hospital")
+        if st.button("Search"):
+            if postal_code:
+                # Function to find 5 highest-rated hospitals based on postal code
+                def find_top_hospitals(postal_code):
                 # Use Google Maps API to geocode the postal code
-                geocode_result = gmaps.geocode(postal_code)
-                if geocode_result:
-                    location = geocode_result[0]['geometry']['location']
-                    # Use Google Maps Places API to find nearby hospitals
-                    hospitals = gmaps.places_nearby(location, radius=5000, type='hospital', keyword='mental health')
-                    if hospitals:
-                        # Sort hospitals by rating
-                        hospitals_sorted = sorted(hospitals['results'], key=lambda x: x.get('rating', 0), reverse=True)
-                        # Take the top 5 hospitals based on rating                
-                        top_hospitals = hospitals_sorted[:5]
-                        return top_hospitals
-                return None
+                    geocode_result = gmaps.geocode(postal_code)
+                    if geocode_result:
+                        location = geocode_result[0]['geometry']['location']
+                        # Use Google Maps Places API to find nearby hospitals
+                        hospitals = gmaps.places_nearby(location, radius=5000, type='hospital', keyword='mental health')
+                        if hospitals:
+                            # Sort hospitals by rating
+                            hospitals_sorted = sorted(hospitals['results'], key=lambda x: x.get('rating', 0), reverse=True)
+                            # Take the top 5 hospitals based on rating                
+                            top_hospitals = hospitals_sorted[:5]
+                            return top_hospitals
+                    return None
 
-            hospitals = find_top_hospitals(postal_code)
-            if hospitals:
-                # Display top 5 hospitals information
-                for hospital in hospitals:
-                    st.write(hospital['name'], hospital['vicinity'])
+                hospitals = find_top_hospitals(postal_code)
+                if hospitals:
+                    # Display top 5 hospitals information
+                    for hospital in hospitals:
+                        st.write(hospital['name'], hospital['vicinity'])
+                else:
+                    st.write("No hospitals found nearby or unable to retrieve data.")
             else:
-                st.write("No hospitals found nearby or unable to retrieve data.")
-        else:
-            st.warning("Please enter a valid postal code.")
+                st.warning("Please enter a valid postal code.")
 
 # Page 4: Game - Rock, Paper, Scissors
 def game():
-    st.title('Rock, Paper, Scissors Game')
-    st.write("Choose Rock, Paper, or Scissors and see if you can beat the computer!")
+    st.markdown("<h1 style='text-align: center;'>Rock, Paper, Scissors Game</h1>", unsafe_allow_html=True)
+    # Display Lottie animation and title side by side
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        # Display Lottie animation
+        lottie_url = "https://lottie.host/f39c2a58-5f27-4ce3-9990-5a78d5ad0291/a9sDumWkcl.json"  # Add URL to your Lottie animation
+        response = requests.get(lottie_url)
+        if response.status_code == 200:
+            lottie_json = response.json()
+            st_lottie(lottie_json, speed=1, width=300, height=300)
+            
+    with col2:
+        st.write("Choose Rock, Paper, or Scissors and see if you can beat the computer!")
 
-    def play_game(user_choice):
-        choices = ["Rock", "Paper", "Scissors"]
-        computer_choice = random.choice(choices)
+        def play_game(user_choice):
+            choices = ["Rock", "Paper", "Scissors"]
+            computer_choice = random.choice(choices)
 
-        if user_choice == computer_choice:
-            return "It's a tie! The computer also chose " + computer_choice
-        elif (user_choice == "Rock" and computer_choice == "Scissors") or \
-             (user_choice == "Paper" and computer_choice == "Rock") or \
-             (user_choice == "Scissors" and computer_choice == "Paper"):
-            return "You win! The computer chose " + computer_choice
-        else:
-            return "You lose! The computer chose " + computer_choice
+            if user_choice == computer_choice:
+                return "It's a tie! The computer also chose " + computer_choice
+            elif (user_choice == "Rock" and computer_choice == "Scissors") or \
+                (user_choice == "Paper" and computer_choice == "Rock") or \
+                (user_choice == "Scissors" and computer_choice == "Paper"):
+                return "You win! The computer chose " + computer_choice
+            else:
+                return "You lose! The computer chose " + computer_choice
 
-    user_choice = st.radio("Choose your option:", ["Rock", "Paper", "Scissors"])
+        user_choice = st.radio("Choose your option:", ["Rock", "Paper", "Scissors"])
 
-    if st.button("Play"):
-        result = play_game(user_choice)
-        st.success(result)
+        if st.button("Play"):
+            result = play_game(user_choice)
+            st.success(result)
 
 # Display selected page
 if selected == "Homepage":
