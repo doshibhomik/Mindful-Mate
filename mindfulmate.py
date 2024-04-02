@@ -5,9 +5,16 @@ import os
 from streamlit_chat import message
 import googlemaps
 import random
+import numpy as np
+from streamlit_option_menu import option_menu
 
 # Set Streamlit page configuration
-st.set_page_config(page_title="Mindful Mate", page_icon=":robot:")
+st.set_page_config(
+    page_title="Mindful Mate",
+    page_icon=":robot:",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 # Set OpenAI API key
 openai.api_key = "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"
@@ -16,41 +23,211 @@ googlemaps_api_key = "AIzaSyDHhQL4h-K7sER8Z9bZ41dWR6jowTNM-2A"
 # Initialize Google Maps client
 gmaps = googlemaps.Client(key=googlemaps_api_key)
 
-# Define page background styling
-page_bg = f"""
+# Custom CSS styles
+styles = """
 <style>
-[data-testid="stSidebar"] {{
-background-color:#1F423F;
-}}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-[data-testid="stToolbar"] {{
-background-color:#FCFCFC;
-}}
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #FFFFFF; /* White text */
+}
+
+.sidebar .sidebar-content {
+    background-color: #1F2833; /* Dark blue background */
+    padding: 2rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.sidebar .sidebar-content .sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.3s ease;
+    background-color: #FFFFFF; /* White background for sidebar items */
+    color: #1F2833; /* Dark blue text for sidebar items */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.sidebar .sidebar-content .sidebar-item:hover {
+    background-color: #D9E2EC;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transform: translateY(-2px);
+}
+
+.sidebar .sidebar-content .sidebar-item-icon {
+    margin-right: 1rem;
+    font-size: 1.25rem;
+    color: #1F2833; /* Dark blue icon color */
+}
+
+.sidebar .sidebar-content .sidebar-item-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1F2833; /* Dark blue text color */
+}
+
+.sidebar .sidebar-content .sidebar-item-label:hover {
+    color: #1F2833; /* Dark blue text color */
+}
+
+.streamlit-container {
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stButton button {
+    background-color: #1F2833; /* Dark blue button background */
+    color: #FFFFFF; /* White button text */
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.stButton button:hover {
+    background-color: #2C5F56;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.stButton button:active {
+    background-color: #1F2833; /* Dark blue button background */
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.stTextInput input {
+    border: 1px solid #D9E2EC;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    color: #FFFFFF; /* White text color for input */
+}
+
+.stTextInput input:focus {
+    outline: none;
+    border-color: #1F2833; /* Dark blue border color */
+    box-shadow: 0 0 0 2px rgba(31, 40, 51, 0.2); /* Dark blue border shadow */
+}
+
+/* Sidebar styles */
+.sidebar .sidebar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFFFFF; /* White text */
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.sidebar .sidebar-navigation {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar .sidebar-navigation li {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar .sidebar-navigation a {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #FFFFFF; /* White text */
+    background-color: #1F2833; /* Dark blue background */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s ease;
+}
+
+.sidebar .sidebar-navigation a:hover {
+    background-color: #2C5F56;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transform: translateY(-2px);
+}
+
+.sidebar .sidebar-navigation a .icon {
+    margin-right: 1rem;
+    font-size: 1.25rem;
+    color: #FFFFFF; /* White icon color */
+}
+
+.sidebar .sidebar-navigation a.active {
+    background-color: #2C5F56;
+    color: #FFFFFF; /* White text */
+}
 </style>
 """
-st.markdown(page_bg,unsafe_allow_html=True)
- 
-# Sidebar contents for navigation
+st.markdown(styles, unsafe_allow_html=True)
+
+# Sidebar navigation
 with st.sidebar:
-    st.title('Navigation')
-    page_selection = st.radio('Go to', ['Homepage', 'Chatbot', 'Nearby Hospital', 'Game'])
+    # Add logo with circular border
+    st.sidebar.image("Mindful Mate.jpg", width=100, caption="", use_column_width=False, output_format="JPEG")
+    
+    # Add menu options
+    selected = option_menu(
+        menu_title=None,
+        options=["Homepage", "Chatbot", "Nearby Hospital", "Game"],
+        icons=["house", "robot", "hospital", "joystick"],
+        default_index=0,
+        orientation="vertical",
+        styles={
+            "container": {"padding": "0!important", "background-color": "#2C5F56"},  # Dark green background for sidebar
+            "icon": {"color": "#FCFCFC", "font-size": "18px"},  # White icon color
+            "nav-link": {
+                "font-size": "16px",
+                "text-align": "left",
+                "margin": "0px",
+                "color": "#FCFCFC",  # White text color
+                "font-family": "inherit",  # Use the same font as the selected link
+                "--hover-color": "#eee",  # Light gray hover color
+            },
+            "nav-link-selected": {"background-color": "#1F423F", "color": "#FCFCFC", "font-family": "inherit"},  # Dark blue selected item background and white text
+        },
+    )
 
 # Define functions for each page
 
 # Page 1: Homepage
 def homepage():
-    st.title('Mindful Mate')
+    st.title("Mindful Mate")
+    st.image("Mindful Mate.jpg", width=300, use_column_width=False)
     st.write("""
-        
-    Mindful Mate is your empathetic AI friend, here to provide a listening ear, encouragement, 
-    and tools to help you care for your mental wellbeing. 
-    As your personal mental health companion, I'm available anytime you need a check-in, want to talk through worries, 
-    or could use help practicing mindfulness and self-care.
+        Welcome to Mindful Mate, your AI companion for emotional wellbeing.
+
+Feeling stressed, anxious, or just need someone to talk to? Mindful Mate is here to lend a caring ear and provide tools to help you navigate life's challenges with greater ease.
+
+As your empathetic AI friend, I'm available 24/7 to listen without judgment, offer encouragement, and guide you through simple mindfulness practices. Whether you need a check-in, want to talk through worries, or could use help unwinding, I'm here to support your mental health journey.
+
+In addition to being your supportive companion, I can also:
+
+🏥 Locate nearby hospitals and mental health resources with our easy locator tool.
+
+✂️ Take a break and have some fun with a quick game of rock, paper, scissors.
+
+My role is to be your ally, not to replace professional care. However, I'm always a message away when you need a friendly voice or extra support between appointments.
+
+Let's walk the path of wellbeing together. I'm here to listen, anytime.
     """)
 
 # Page 2: Chatbot
 def chatbot():
-    st.title('Mental Health Chatbot')
+    st.title("Mental Health Chatbot")
 
     # Generate empty lists for generated and past.
     ## generated stores AI generated responses
@@ -89,8 +266,8 @@ def chatbot():
     def CustomChatGPT(user_input):
         messages.append({"role": "user", "content": user_input})
         response = openai.ChatCompletion.create(
-            model = "gpt-3.5-turbo",
-            messages = messages,
+            model="gpt-3.5-turbo",
+            messages=messages,
             temperature=0,
         )
         ChatGPT_reply = response["choices"][0]["message"]["content"]
@@ -111,8 +288,8 @@ def chatbot():
 
 # Page 3: Nearby Hospital
 def nearby_hospital():
-    st.title('Find Nearby Hospital if youre feeling low ')
-    postal_code = st.text_input("Enter your postal code:")
+    st.title("Find Nearby Hospital if you're feeling low")
+    postal_code = st.text_input("Enter your postal code:", key="postal code hospital")
     if st.button("Search"):
         if postal_code:
             # Function to find 5 highest-rated hospitals based on postal code
@@ -126,7 +303,7 @@ def nearby_hospital():
                     if hospitals:
                         # Sort hospitals by rating
                         hospitals_sorted = sorted(hospitals['results'], key=lambda x: x.get('rating', 0), reverse=True)
-                        # Take the top 5 hospitals based on rating
+                        # Take the top 5 hospitals based on rating                
                         top_hospitals = hospitals_sorted[:5]
                         return top_hospitals
                 return None
@@ -141,72 +318,35 @@ def nearby_hospital():
         else:
             st.warning("Please enter a valid postal code.")
 
-# Page 4: Game
 def game():
-    st.title('Car Racing Game')
-    st.write("Use the left and right arrow keys to move the car and avoid the obstacles!")
+    st.title('Rock, Paper, Scissors Game')
+    st.write("Choose Rock, Paper, or Scissors and see if you can beat the computer!")
 
-    # Define the canvas size and car position
-    canvas_width = 600
-    canvas_height = 400
-    car_width = 50
-    car_height = 80
-    car_x = canvas_width // 2
-    car_y = canvas_height - car_height - 20
+    def play_game(user_choice):
+        choices = ["Rock", "Paper", "Scissors"]
+        computer_choice = random.choice(choices)
 
-    # Define the obstacle properties
-    obstacle_width = 100
-    obstacle_height = 20
-    obstacle_speed = 5
-    obstacle_x = random.randint(0, canvas_width - obstacle_width)
-    obstacle_y = -obstacle_height
+        if user_choice == computer_choice:
+            return "It's a tie! The computer also chose " + computer_choice
+        elif (user_choice == "Rock" and computer_choice == "Scissors") or \
+             (user_choice == "Paper" and computer_choice == "Rock") or \
+             (user_choice == "Scissors" and computer_choice == "Paper"):
+            return "You win! The computer chose " + computer_choice
+        else:
+            return "You lose! The computer chose " + computer_choice
 
-    # Function to draw the car
-    def draw_car():
-        st.image('car.png', width=car_width)
+    user_choice = st.radio("Choose your option:", ["Rock", "Paper", "Scissors"])
 
-    # Function to draw the obstacle
-    def draw_obstacle():
-        st.image('obstacle.png', width=obstacle_width)
-
-    # Function to move the car
-    def move_car(direction):
-        nonlocal car_x
-        if direction == 'left':
-            car_x -= 10
-        elif direction == 'right':
-            car_x += 10
-
-    # Function to update the obstacle position
-    def update_obstacle():
-        nonlocal obstacle_y
-        obstacle_y += obstacle_speed
-        if obstacle_y > canvas_height:
-            reset_obstacle()
-
-    # Function to reset the obstacle position
-    def reset_obstacle():
-        nonlocal obstacle_x, obstacle_y
-        obstacle_x = random.randint(0, canvas_width - obstacle_width)
-        obstacle_y = -obstacle_height
-
-    # Main game loop
-    while True:
-        st.image('background.png', width=canvas_width, height=canvas_height)
-        draw_car()
-        draw_obstacle()
-        update_obstacle()
-        st.write("Score: 0")
-        st.write("Time: 0s")
-        st.write("High Score: 0")
-        st.write("Time Spent: 0s")
+    if st.button("Play"):
+        result = play_game(user_choice)
+        st.success(result)
 
 # Display selected page
-if page_selection == 'Homepage':
+if selected == "Homepage":
     homepage()
-elif page_selection == 'Chatbot':
+elif selected == "Chatbot":
     chatbot()
-elif page_selection == 'Nearby Hospital':
+elif selected == "Nearby Hospital":
     nearby_hospital()
-elif page_selection == 'Game':
+elif selected == "Game":
     game()
