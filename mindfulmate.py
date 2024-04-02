@@ -181,7 +181,7 @@ st.markdown(styles, unsafe_allow_html=True)
 # Sidebar navigation
 with st.sidebar:
     # Add logo with circular border
-    st.sidebar.image("Mindful Mate.jpg", width=100, caption="", use_column_width=False, output_format="JPEG")
+    st.sidebar.image("Mindful Mate.jpg", width=100, caption="", use_column_width=True, output_format="JPEG")
     
     # Add menu options
     selected = option_menu(
