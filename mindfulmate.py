@@ -209,13 +209,20 @@ def homepage():
     st.image("Mindful Mate.jpg", width=300, use_column_width=False)
     st.write("""
         Welcome to Mindful Mate, your AI companion for emotional wellbeing.
+
 Feeling stressed, anxious, or just need someone to talk to? Mindful Mate is here to lend a caring ear and provide tools to help you navigate life's challenges with greater ease.
+
 As your empathetic AI friend, I'm available 24/7 to listen without judgment, offer encouragement, and guide you through simple mindfulness practices. Whether you need a check-in, want to talk through worries, or could use help unwinding, I'm here to support your mental health journey.
+
 In addition to being your supportive companion, I can also:
+
 🏥 Locate nearby hospitals and mental health resources with our easy locator tool.
+
 ✂️ Take a break and have some fun with a quick game of rock, paper, scissors.
+
 My role is to be your ally, not to replace professional care. However, I'm always a message away when you need a friendly voice or extra support between appointments.
-Let's walk the path of wellbeing together. I'm here to listen, anytime.
+
+Let's walk the path of wellbeing together. I'm here to listen, anytime
     """)
 
 # Page 2: Chatbot
