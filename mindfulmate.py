@@ -318,6 +318,7 @@ def nearby_hospital():
         else:
             st.warning("Please enter a valid postal code.")
 
+# Page 4: Game
 def game():
     st.title('Rock, Paper, Scissors Game')
     st.write("Choose Rock, Paper, or Scissors and see if you can beat the computer!")
