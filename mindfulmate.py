@@ -140,66 +140,29 @@ def nearby_hospital():
                 st.write("No hospitals found nearby or unable to retrieve data.")
         else:
             st.warning("Please enter a valid postal code.")
-
-# Page 4: Game
+# Page 4: Game - Rock, Paper, Scissors
 def game():
-    st.title('Car Racing Game')
-    st.write("Use the left and right arrow keys to move the car and avoid the obstacles!")
+    st.title('Rock, Paper, Scissors Game')
+    st.write("Choose Rock, Paper, or Scissors and see if you can beat the computer!")
 
-    # Define the canvas size and car position
-    canvas_width = 600
-    canvas_height = 400
-    car_width = 50
-    car_height = 80
-    car_x = canvas_width // 2
-    car_y = canvas_height - car_height - 20
+    def play_game(user_choice):
+        choices = ["Rock", "Paper", "Scissors"]
+        computer_choice = random.choice(choices)
 
-    # Define the obstacle properties
-    obstacle_width = 100
-    obstacle_height = 20
-    obstacle_speed = 5
-    obstacle_x = random.randint(0, canvas_width - obstacle_width)
-    obstacle_y = -obstacle_height
+        if user_choice == computer_choice:
+            return "It's a tie! The computer also chose " + computer_choice
+        elif (user_choice == "Rock" and computer_choice == "Scissors") or \
+             (user_choice == "Paper" and computer_choice == "Rock") or \
+             (user_choice == "Scissors" and computer_choice == "Paper"):
+            return "You win! The computer chose " + computer_choice
+        else:
+            return "You lose! The computer chose " + computer_choice
 
-    # Function to draw the car
-    def draw_car():
-        st.image('car.png', width=car_width)
+    user_choice = st.radio("Choose your option:", ["Rock", "Paper", "Scissors"])
 
-    # Function to draw the obstacle
-    def draw_obstacle():
-        st.image('obstacle.png', width=obstacle_width)
-
-    # Function to move the car
-    def move_car(direction):
-        nonlocal car_x
-        if direction == 'left':
-            car_x -= 10
-        elif direction == 'right':
-            car_x += 10
-
-    # Function to update the obstacle position
-    def update_obstacle():
-        nonlocal obstacle_y
-        obstacle_y += obstacle_speed
-        if obstacle_y > canvas_height:
-            reset_obstacle()
-
-    # Function to reset the obstacle position
-    def reset_obstacle():
-        nonlocal obstacle_x, obstacle_y
-        obstacle_x = random.randint(0, canvas_width - obstacle_width)
-        obstacle_y = -obstacle_height
-
-    # Main game loop
-    while True:
-        st.image('background.png', width=canvas_width, height=canvas_height)
-        draw_car()
-        draw_obstacle()
-        update_obstacle()
-        st.write("Score: 0")
-        st.write("Time: 0s")
-        st.write("High Score: 0")
-        st.write("Time Spent: 0s")
+    if st.button("Play"):
+        result = play_game(user_choice)
+        st.success(result)
 
 # Display selected page
 if page_selection == 'Homepage':
