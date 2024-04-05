@@ -21,7 +21,7 @@ st.set_page_config(
 )
 
 # Set OpenAI API key
-openai.api_key = "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"
+openai.api_key = "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"
 googlemaps_api_key = "AIzaSyDHhQL4h-K7sER8Z9bZ41dWR6jowTNM-2A"
 
 # Initialize Google Maps client
